@@ -5,32 +5,62 @@ import prettierPlugin from "eslint-plugin-prettier";
 import globals from "globals";
 
 export default [
+  // Recommended JS rules for the entire monorepo
   js.configs.recommended,
+
+  // General configuration of the monorepo
   {
-    files: ["**/*.{js,jsx}"],
+    files: ["**/*.js", "**/*.jsx"],
+    ignores: ["dist/", "build/", "node_modules/"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
-        ...globals.browser,
         ...globals.node,
-      },
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
+        ...globals.browser,
       },
     },
     plugins: {
-      react: reactPlugin,
       import: importPlugin,
       prettier: prettierPlugin,
     },
     rules: {
-      "react/react-in-jsx-scope": "off",
       "prettier/prettier": ["error", { endOfLine: "auto" }],
+    },
+  },
+
+  // FRONTEND Overrides (React)
+  {
+    files: ["frontend/**/*.{js,jsx}"],
+    plugins: {
+      react: reactPlugin,
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      "react/react-in-jsx-scope": "off",
     },
     settings: {
       react: { version: "detect" },
     },
-    ignores: ["dist/", "node_modules/"],
+  },
+
+  // Overrides for BACKEND
+  {
+    files: ["backend/**/*.js"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
+
+  // Overrides for the BOT
+  {
+    files: ["bot/**/*.js"],
+    languageOptions: {
+      globals: globals.node,
+    },
   },
 ];
